@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Nebras" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/nebras_dark_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="Theme.Nebras.Splash" parent="Theme.Nebras">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+</resources>

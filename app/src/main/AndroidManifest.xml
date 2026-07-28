@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- مطلوبة للبثّ والتنزيل -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <!-- إشعارات FCM: مطلوب منذ Android 13 (API 33) للسماح بعرض الإشعارات -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <!-- ▶︎ تشغيل صوتيّ في الخلفية عبر MediaSessionService (بديل audio_service).
+         FOREGROUND_SERVICE: مطلوب للـ Service الذي يُبقي التشغيل حيّاً.
+         FOREGROUND_SERVICE_MEDIA_PLAYBACK: إضافيّ منذ Android 14 (API 34)
+         لتمييز نوع الخدمة وتفادي الرفض من النظام. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <!-- FOREGROUND_SERVICE_DATA_SYNC: تنزيل المحتوى للعمل دون إنترنت عبر
+         WorkManager بخدمة أماميّة على Android 14+. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+
+    <!-- ⛔ منع إضافة صلاحية AD_ID تلقائياً من Manifest Merger.
+         بعض تبعيّات Firebase/Play Services كانت تحقن AD_ID في merged manifest.
+         وجودها يجبر التطبيق على الإفصاح في Data Safety أنّه يجمع Ad ID،
+         وهذا ليس صحيحاً (لا إعلانات، لا تتبّع). -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+
+    <application
+        android:name=".NebrasApplication"
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:allowBackup="false"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Nebras"
+        tools:targetApi="33">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Nebras.Splash"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize"
+            android:supportsPictureInPicture="true"
+            android:resizeableActivity="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <!-- روابط نبراس العميقة: nebras://content/{id} تفتح العنصر مباشرة. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="nebras" android:host="content"/>
+            </intent-filter>
+
+            <!-- استقبال ملف من تطبيق آخر وفتحه مباشرة في شاشة نشر المجتمع. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="audio/*"/>
+                <data android:mimeType="video/*"/>
+                <data android:mimeType="application/pdf"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+
+        </activity>
+
+        <!-- ▶︎ خدمة التشغيل الخلفيّة (بديل com.ryanheise.audioservice.AudioService).
+             تُبقي المشغّل حيّاً بعد إغلاق الشاشة وتُظهر إشعار الوسائط بالطاقم
+             الكامل (السابق/إرجاع/تشغيل-إيقاف/تقديم/التالي).
+             مُصدَّرة لأنّ MediaSessionService يستلزم ذلك ليتفاعل مع النظام
+             (Android Auto / Wear OS / أزرار السمّاعات). -->
+        <service
+            android:name=".media.NebrasPlaybackService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService"/>
+                <action android:name="android.media.browse.MediaBrowserService"/>
+            </intent-filter>
+        </service>
+
+        <!-- استقبال رسائل FCM (data-only) وعرضها محليّاً. -->
+        <service
+            android:name=".notifications.NebrasMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <!-- قناة الإشعارات الافتراضية: يجب أن تطابق القناة المُنشأة في
+             NotificationChannels.kt -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="nebras_notifications" />
+
+        <!-- أيقونة الإشعار الافتراضية: vector drawable أحاديّ اللون
+             (silhouette أبيض) كما يفرض Android ≥ 5.0. تمرير أيقونة ملوّنة
+             يُنتج مربّعاً أبيض صلباً في شريط الحالة. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_notify" />
+
+        <!-- لون التمييز الذي يستخدمه النظام لتلوين الـ silhouette. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/ic_notification_accent"
+            tools:replace="android:resource" />
+
+    </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- مطلوب على Android 11+ (API 30) حتى يرى التطبيق المتصفحات المثبّتة
+             ويفتح الروابط فيها من AutoLinkText.
+             https://developer.android.com/training/package-visibility -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="http"/>
+        </intent>
+    </queries>
+
+</manifest>

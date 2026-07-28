@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Auto Backup rules لـ Android ≤ 11 (API ≤ 30).
+  نستثني صناديق Hive (محفوظات/تنزيلات/إشعارات/كاش) لأنّ:
+    1) محتواها قابل لإعادة البناء من Firestore.
+    2) قد يحوي بيانات شخصيّة (FCM token، تاريخ مشاهدة) لا نريد نسخها
+       تلقائيّاً إلى Google Drive للمستخدم.
+  SharedPreferences نتركها بدون استثناء (تفضيلات اللغة/الثيم — لا حسّاسة).
+
+  ملاحظة: `allowBackup="false"` في AndroidManifest يلغي عمل هذه القواعد
+  حالياً. القواعد محفوظة كتوثيق احتياطيّ في حال إعادة تفعيل Backup
+  مستقبلاً. شاملة ملفّات `.lock` التي ينشئها Hive لمنع تسريب حالة
+  الجلسة.
+-->
+<full-backup-content>
+    <exclude domain="database" path="." />
+    <exclude domain="file" path="hive/" />
+    <exclude domain="file" path="content_metadata_cache.hive" />
+    <exclude domain="file" path="downloads.hive" />
+    <exclude domain="file" path="saved_items.hive" />
+    <exclude domain="file" path="notifications.hive" />
+    <exclude domain="file" path="content_metadata_cache.lock" />
+    <exclude domain="file" path="downloads.lock" />
+    <exclude domain="file" path="saved_items.lock" />
+    <exclude domain="file" path="notifications.lock" />
+</full-backup-content>

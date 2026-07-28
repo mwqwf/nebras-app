@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      سمة النافذة الأساسية. ألوان Compose الفعلية تُبنى في `ui/theme/Theme.kt`
+      من نفس رموز `ColorsManager` في نسخة Flutter؛ هنا نضبط فقط ما يخصّ
+      النافذة نفسها (خلفية، شريط الحالة/التنقّل) كي لا يومض أبيض قبل أول رسم.
+    -->
+    <style name="Theme.Nebras" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/nebras_light_scaffold</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+
+    <!-- شاشة الإقلاع: نفس خلفية `launch_background` التي كانت تعرضها Flutter. -->
+    <style name="Theme.Nebras.Splash" parent="Theme.Nebras">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+</resources>

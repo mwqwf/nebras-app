@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#0B2545</color>
+    <!-- لون التمييز (accent) لأيقونة الإشعار الأحاديّة اللون. النظام
+         يستخدمه لتلوين الـ silhouette تلقائيّاً في شريط الحالة. -->
+    <color name="ic_notification_accent">#0B2545</color>
+
+    <!-- نفس رموز ColorsManager في نسخة Flutter — تُستعمل لخلفية النافذة فقط. -->
+    <color name="nebras_light_scaffold">#F5F6F9</color>
+    <color name="nebras_dark_background">#121212</color>
+</resources>

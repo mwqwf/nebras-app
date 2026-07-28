@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+  <background android:drawable="@color/ic_launcher_background"/>
+  <!--
+    inset 25% يحافظ على المنطقة الآمنة (safe zone) التي تفرضها مواصفات
+    Material Adaptive Icons. القناع الدائريّ على Pixel/One UI يقصّ ~33%
+    من الأبعاد، فبدون هذا الـ inset كانت تظهر الأيقونة مقطوعة.
+  -->
+  <foreground>
+      <inset
+          android:drawable="@drawable/ic_launcher_foreground"
+          android:inset="25%" />
+  </foreground>
+</adaptive-icon>

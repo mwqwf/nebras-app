@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Network Security Config — سياسة محكمة مع استثناءات ضرورية:
+  * الافتراض: جميع الروابط HTTPS (cleartext مرفوض).
+  * استثناء 1 — localhost/127.0.0.1: just_audio يُشغّل proxy محلّياً يخدم
+    ExoPlayer عبر cleartext على الجهاز (محصور بالجهاز، لا شبكة خارجيّة).
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">localhost</domain>
+        <domain includeSubdomains="false">127.0.0.1</domain>
+    </domain-config>
+</network-security-config>
